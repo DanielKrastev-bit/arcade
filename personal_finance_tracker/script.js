@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addTransactionDOM(amount) {
         const item = document.createElement('li');
         item.textContent = amount > 0 ? `+${amount}` : `${amount}`;
+        item.classList.add(amount >= 0 ? 'positive' : 'negative');
         transactionList.appendChild(item);
     }
 
