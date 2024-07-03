@@ -1,104 +1,121 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const incomeBtn = document.getElementById('income-btn');
-    const expenseBtn = document.getElementById('expense-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const amountInput = document.getElementById('amount');
+function showRegisterForm() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = 'block';
+  }
+  
+  function showLoginForm() {
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+  }
+  
+  async function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+  
+    try {
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+  
+      const result = await response.json();
+      if (result.success) {
+        showTracker(result.username);
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  async function register() {
+    const newUsername = document.getElementById('newUsername').value;
+    const newPassword = document.getElementById('newPassword').value;
+  
+    try {
+      const response = await fetch('http://localhost:3000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: newUsername, password: newPassword })
+      });
+  
+      const result = await response.json();
+      if (result.success) {
+        alert(result.message);
+        showLoginForm();
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  async function showTracker(username) {
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('tracker').style.display = 'block';
+  
+    try {
+      const response = await fetch(`http://localhost:3000/userdata/${username}`);
+      const result = await response.json();
+  
+      if (result.success) {
+        updateTransactions(result.user.transactions);
+        updateBalance(result.user.balance);
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  async function addTransaction() {
+    const username = document.getElementById('username').value;
+    const amount = document.getElementById('transactionAmount').value;
+  
+    try {
+      const response = await fetch(`http://localhost:3000/addtransaction/${username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ amount })
+      });
+  
+      const result = await response.json();
+      showTracker(username);
+      updateBalance(username);
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+  function logout() {
+    document.getElementById('tracker').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+  }
+  
+  function updateTransactions(transactions) {
     const transactionList = document.getElementById('transaction-list');
-    const netBalance = document.getElementById('net-balance');
-
-    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    let total = 0;
-
-    function saveTransactions() {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-    }
-
-    function updateTotal() {
-        total = transactions.reduce((acc, t) => acc + t.amount, 0);
-        netBalance.textContent = `$${total.toFixed(2)}`;
-    }
-
-    function addIncome() {
-        const amount = parseFloat(amountInput.value.trim());
-        
-        if (!isNaN(amount)) {
-            transactions.push({ id: Date.now(), amount: amount });
-            addTransactionDOM(amount);
-            updateTotal();
-            saveTransactions();
-            amountInput.value = '';
-        }
-    }
-
-    function addExpense() {
-        const amount = parseFloat(amountInput.value.trim());
-        
-        if (!isNaN(amount)) {
-            transactions.push({ id: Date.now(), amount: -amount });
-            addTransactionDOM(-amount);
-            updateTotal();
-            saveTransactions();
-            amountInput.value = '';
-        }
-    }
-
-    function addTransactionDOM(amount) {
-        const item = document.createElement('li');
-        item.textContent = amount > 0 ? `+${amount}` : `${amount}`;
-        item.classList.add(amount >= 0 ? 'positive' : 'negative');
-        transactionList.appendChild(item);
-    }
-
-    function resetTransactions() {
-        transactions = [];
-        transactionList.innerHTML = '';
-        total = 0;
-        netBalance.textContent = `$${total.toFixed(2)}`;
-        localStorage.removeItem('transactions');
-    }
-
-    incomeBtn.addEventListener('click', addIncome);
-    expenseBtn.addEventListener('click', addExpense);
-    resetBtn.addEventListener('click', resetTransactions);
-    
-    function init() {
-        transactionList.innerHTML = '';
-        transactions.forEach(transaction => {
-            addTransactionDOM(transaction.amount);
-        });
-        updateTotal();
-    }
-
-    init();
-    document.addEventListener("DOMContentLoaded", function() {
-        const username = localStorage.getItem("username");
-        if (username) {
-            showApp();
-        } else {
-            showLoginForm();
-        }
+    transactionList.innerHTML = '';
+    transactions.forEach(transaction => {
+      const listItem = document.createElement('li');
+      listItem.textContent = transaction > 0 ? `+${transaction}` : `${transaction}`;
+      listItem.className = transaction > 0 ? 'positive' : 'negative';
+      transactionList.appendChild(listItem);
     });
-    
-    document.getElementById("login-btn").addEventListener("click", function() {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-    
-        if (username === "daniel" && password === "daniel") {
-            localStorage.setItem("username", username);
-            showApp();
-        } else {
-            alert("Invalid username or password. Please try again.");
-        }
-    });
-    
-    function showLoginForm() {
-        document.getElementById("login-form").style.display = "block";
-        document.getElementById("app").style.display = "none";
-    }
-    
-    function showApp() {
-        document.getElementById("login-form").style.display = "none";
-        document.getElementById("app").style.display = "block";
-    }
-    
-});
+  }
+  
+  function updateBalance(balance) {
+    document.getElementById('net-balance').textContent = `$${balance.toFixed(2)}`;
+  }
+  
