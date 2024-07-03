@@ -26,15 +26,51 @@ h1 {
     flex-direction: column;
 }
 
-.form-container input,
-.form-container button {
+.form-container input {
     padding: 10px;
     margin: 5px 0;
     border: 1px solid #000000;
     border-radius: 20px;
+    flex: 1;
 }
-.form-container button {
-    background: #46ff6e;
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.button-container button {
+    flex: 1;
+    padding: 10px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#income-btn {
+    background-color: #5cb85c;
+    color: #fff;
+    width: 40%;
+}
+
+#expense-btn {
+    background-color: #d9534f;
+    color: #fff;
+    width: 40%;
+}
+
+#reset-btn {
+    background-color: #c9302c;
+    color: #fff;
+    width: 20%;
+}
+
+button:hover {
+    opacity: 0.8;
 }
 
 ul {
@@ -51,6 +87,7 @@ li {
     margin: 5px 0;
     border: 1px solid #ddd;
     border-radius: 20px;
+    border: 1px solid #461dff;
 }
 
 .totals {
@@ -60,6 +97,7 @@ li {
 h3 {
     margin: 5px 0;
 }
+
 .positive {
     color: green;
     background-color: rgb(116, 241, 122);
