@@ -70,4 +70,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     init();
+    document.addEventListener("DOMContentLoaded", function() {
+        const username = localStorage.getItem("username");
+        if (username) {
+            showApp();
+        } else {
+            showLoginForm();
+        }
+    });
+    
+    document.getElementById("login-btn").addEventListener("click", function() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+    
+        if (username === "daniel" && password === "daniel") {
+            localStorage.setItem("username", username);
+            showApp();
+        } else {
+            alert("Invalid username or password. Please try again.");
+        }
+    });
+    
+    function showLoginForm() {
+        document.getElementById("login-form").style.display = "block";
+        document.getElementById("app").style.display = "none";
+    }
+    
+    function showApp() {
+        document.getElementById("login-form").style.display = "none";
+        document.getElementById("app").style.display = "block";
+    }
+    
 });
